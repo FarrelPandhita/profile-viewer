@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Visitor Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #94a3b8;
+        }
+
+        .warning-banner {
+            background: rgba(113, 63, 18, 0.3);
+            border: 1px solid rgba(202, 138, 4, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .warning-banner .icon {
+            color: #fbbf24;
+            flex-shrink: 0;
+        }
+
+        .warning-content h3 {
+            color: #fbbf24;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+
+        .warning-content p {
+            color: rgba(254, 240, 138, 0.8);
+            font-size: 0.875rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(51, 65, 85, 0.5);
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .advanced-settings {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
+            margin-top: 16px;
+        }
+
+        .advanced-settings.show {
+            display: grid;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            color: #fff;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to right, #dc2626, #b91c1c);
+            color: #fff;
+            flex: 1;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0;
+        }
+
+        .btn-link:hover {
+            color: #93c5fd;
+        }
+
+        .stat-box {
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #475569;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .stat-success {
+            background: rgba(6, 78, 59, 0.3);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .stat-success .stat-label {
+            color: #86efac;
+        }
+
+        .stat-success .stat-value {
+            color: #bbf7d0;
+        }
+
+        .stat-error {
+            background: rgba(127, 29, 29, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-error .stat-label {
+            color: #fca5a5;
+        }
+
+        .stat-error .stat-value {
+            color: #fecaca;
+        }
+
+        .status-running {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: #60a5fa;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #1e293b;
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .logs-container {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            padding: 16px;
+            height: 280px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        .logs-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .logs-container::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        .logs-container::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .log-empty {
+            color: #64748b;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+        }
+
+        .log-time {
+            color: #64748b;
+        }
+
+        .log-info {
+            color: #cbd5e1;
+        }
+
+        .log-success {
+            color: #86efac;
+        }
+
+        .log-error {
+            color: #fca5a5;
+        }
+
+        .log-warning {
+            color: #fcd34d;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Page Visitor Dashboard</h1>
+            <p>Automated page visit simulator for testing</p>
+        </div>
+
+        <!-- Warning Banner -->
+        <div class="warning-banner">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div class="warning-content">
+                <h3>Warning</h3>
+                <p>Only use this tool on websites you own or have explicit permission to test. Unauthorized testing may violate terms of service or laws.</p>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Configuration Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Configuration
+                    </h2>
+                    <button class="btn-link" id="toggleAdvanced">Show Advanced</button>
+                </div>
+
+                <form id="configForm">
+                    <div class="form-group">
+                        <label class="form-label">Target URL</label>
+                        <input type="text" class="form-input" id="url" placeholder="https://your-website.com" value="https://your.site/">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Number of Visits</label>
+                        <input type="number" class="form-input" id="visitCount" min="1" max="10000" value="100">
+                    </div>
+
+                    <div class="advanced-settings" id="advancedSettings">
+                        <div class="form-group">
+                            <label class="form-label">Min View Time (s)</label>
+                            <input type="number" class="form-input" id="minView" step="0.1" min="0" value="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max View Time (s)</label>
+                            <input type="number" class="form-input" id="maxView" step="0.1" min="0" value="2.0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Min Delay (s)</label>
+                            <input type="number" class="form-input" id="minDelay" step="0.01" min="0" value="0.05">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Delay (s)</label>
+                            <input type="number" class="form-input" id="maxDelay" step="0.01" min="0" value="0.25">
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" id="startBtn">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Start Visits
+                        </button>
+                        <button type="button" class="btn btn-danger" id="stopBtn" disabled>
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
+                            </svg>
+                            Stop
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stats Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Statistics
+                    </h2>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-label">Progress</div>
+                    <div class="stat-value" id="progressText">0 / 0</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-box stat-success">
+                    <div class="stat-label">Successful</div>
+                    <div class="stat-value" id="successCount">0</div>
+                </div>
+
+                <div class="stat-box stat-error">
+                    <div class="stat-label">Failed</div>
+                    <div class="stat-value" id="failCount">0</div>
+                </div>
+
+                <div class="status-running" id="runningStatus" style="display: none;">
+                    <div class="spinner"></div>
+                    Running...
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Activity Logs
+                </h2>
+            </div>
+            <div class="logs-container" id="logsContainer">
+                <div class="log-empty">No activity yet. Start visits to see logs.</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>⚠️ This is a simulation dashboard. For real testing, use the Python script with Playwright.</p>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let isRunning = false;
+        let stats = {
+            totalVisits: 0,
+            currentVisit: 0,
+            successfulVisits: 0,
+            failedVisits: 0
+        };
+
+        const userAgents = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
+        ];
+
+        // DOM Elements
+        const toggleAdvanced = document.getElementById('toggleAdvanced');
+        const advancedSettings = document.getElementById('advancedSettings');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const logsContainer = document.getElementById('logsContainer');
+        const progressText = document.getElementById('progressText');
+        const progressBar = document.getElementById('progressBar');
+        const successCount = document.getElementById('successCount');
+        const failCount = document.getElementById('failCount');
+        const runningStatus = document.getElementById('runningStatus');
+
+        // Toggle Advanced Settings
+        toggleAdvanced.addEventListener('click', function() {
+            advancedSettings.classList.toggle('show');
+            if (advancedSettings.classList.contains('show')) {
+                toggleAdvanced.textContent = 'Hide Advanced';
+            } else {
+                toggleAdvanced.textContent = 'Show Advanced';
+            }
+        });
+
+        // Add Log
+        function addLog(message, type = 'info') {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            
+            if (logsContainer.querySelector('.log-empty')) {
+                logsContainer.innerHTML = '';
+            }
+
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
+            
+            logsContainer.insertBefore(logEntry, logsContainer.firstChild);
+
+            // Keep only last 100 logs
+            while (logsContainer.children.length > 100) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+        }
+
+        // Update Stats Display
+        function updateStats() {
+            progressText.textContent = `${stats.currentVisit} / ${stats.totalVisits}`;
+            const progress = stats.totalVisits > 0 ? (stats.currentVisit / stats.totalVisits) * 100 : 0;
+            progressBar.style.width = `${progress}%`;
+            successCount.textContent = stats.successfulVisits;
+            failCount.textContent = stats.failedVisits;
+        }
+
+        // Simulate Visit
+        async function simulateVisit(visitNum) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const success = Math.random() > 0.05; // 95% success rate
+                    const status = success ? 200 : (Math.random() > 0.5 ? 404 : 500);
+                    const ua = userAgents[Math.floor(Math.random() * userAgents.length)];
+                    
+                    const message = `Visit #${visitNum} - Status: ${status} - UA: ${ua.substring(0, 50)}...`;
+                    addLog(message, success ? 'success' : 'error');
+                    
+                    resolve({ success, status });
+                }, Math.random() * 1000 + 500);
+            });
+        }
+
+        // Sleep Function
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Start Visits
+        async function startVisits() {
+            const url = document.getElementById('url').value;
+            const visitCount = parseInt(document.getElementById('visitCount').value);
+            const minView = parseFloat(document.getElementById('minView').value);
+            const maxView = parseFloat(document.getElementById('maxView').value);
+            const minDelay = parseFloat(document.getElementById('minDelay').value);
+            const maxDelay = parseFloat(document.getElementById('maxDelay').value);
+
+            if (!url || !url.startsWith('http')) {
+                addLog('Invalid URL! Must start with http:// or https://', 'error');
+                return;
+            }
+
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            runningStatus.style.display = 'flex';
+
+            // Disable inputs
+            var inputs = document.querySelectorAll('.form-input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = true;
+            }
+
+            stats = {
+                totalVisits: visitCount,
+                currentVisit: 0,
+                successfulVisits: 0,
+                failedVisits: 0
+            };
+            updateStats();
+
+            addLog(`Starting ${visitCount} visits to ${url}`, 'info');
+
+            for (let i = 1; i <= visitCount; i++) {
+                if (!isRunning) {
+                    addLog('Stopped by user', 'warning');
+                    break;
+                }
+
+                stats.currentVisit = i;
+                updateStats();
+
+                const result = await simulateVisit(i);
+
+                if (result.success) {
+                    stats.successfulVisits++;
+                } else {
+                    stats.failedVisits++;
+                }
+                updateStats();
+
+                // Simulate view time
+                const viewTime = Math.random() * (maxView - minView) + minView;
+                await sleep(viewTime * 1000);
+
+                // Inter-visit delay
+                const interDelay = Math.random() * (maxDelay - minDelay) + minDelay;
+                await sleep(interDelay * 1000);
+            }
+
+            if (isRunning) {
+                addLog('All visits completed!', 'success');
+            }
+
+            stopVisits();
+        }
+
+        // Stop Visits
+        function stopVisits() {
+            isRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            runningStatus.style.display = 'none';
+
+            // Enable inputs
+            var inputs = document.querySelectorAll('.form-input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = false;
+            }
+
+            if (stats.currentVisit < stats.totalVisits && stats.currentVisit > 0) {
+                addLog('Stopping...', 'warning');
+            }
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', startVisits);
+        stopBtn.addEventListener('click', function() {
+            isRunning = false;
+        });
+    </script>
+</body>
+</html>
